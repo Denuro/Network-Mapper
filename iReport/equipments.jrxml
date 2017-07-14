@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="equipments" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0470a01b-c37c-4ea7-b8e2-52e3970ab036">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT
+     count(ports."id") AS c_ports,
+     case equipments."type" when 0 then 'Servidor' when 1 then 'Roteador' when 2 then 'Switch' else 'Outro' end as type,
+     equipments."description" AS equipment_description,
+     brands."description" AS brand_description
+FROM
+     "public"."brands" brands INNER JOIN "public"."equipments" equipments ON brands."id" = equipments."brand_id"
+     INNER JOIN "public"."ports" ports ON equipments."id" = ports."equipment_id"
+GROUP BY
+    equipments."type", equipments."description", brands."description"]]>
+	</queryString>
+	<field name="c_ports" class="java.lang.Long"/>
+	<field name="type" class="java.lang.String"/>
+	<field name="equipment_description" class="java.lang.String"/>
+	<field name="brand_description" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="205" height="54" uuid="9189f28a-0f7b-4fa0-9ced-37a59575aea7"/>
+				<textElement>
+					<font size="22" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Equipamentos]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="455" y="0" width="100" height="20" uuid="2a92b08c-e9a0-4c19-9c2f-f1d00190fbb9"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="24" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="167" height="20" uuid="a1431c1a-1319-4eb5-9406-200f0d75b0e9"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descrição]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="187" y="0" width="100" height="20" uuid="b3d09193-acfb-4d6c-9a44-1a98a490b82a"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="307" y="0" width="100" height="20" uuid="3d963317-3d5f-4a9f-87ba-fca4170f16df"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Marca]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="425" y="0" width="100" height="20" uuid="0701d9b2-5c2c-4d16-a126-17a35a6701f9"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Portas]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="167" height="20" uuid="1e896501-7355-4366-a338-02c4fc03d066"/>
+				<textFieldExpression><![CDATA[$F{equipment_description}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="187" y="0" width="100" height="20" uuid="b9e8f1d1-6ba7-4521-8542-fb96ac53cb16"/>
+				<textFieldExpression><![CDATA[$F{type}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="307" y="0" width="100" height="20" uuid="0b6c07ac-fac9-47a3-8cad-e255df3f0740"/>
+				<textFieldExpression><![CDATA[$F{brand_description}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="0" width="100" height="20" uuid="de12cb43-4434-4ac5-9efa-6114cc9c229b"/>
+				<textFieldExpression><![CDATA[$F{c_ports}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="26" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="22" splitType="Stretch">
+			<textField evaluationTime="Report">
+				<reportElement x="285" y="0" width="19" height="20" uuid="f856e4f7-e2f5-4c73-965f-16323b3420c6"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="258" y="0" width="19" height="20" uuid="a57125e9-bc3e-4932-9ccb-6324d171f53d"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="277" y="0" width="8" height="20" uuid="b2562f02-29f7-458e-849a-bed3cf7ee0dd"/>
+				<text><![CDATA[/]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="21" splitType="Stretch"/>
+	</summary>
+</jasperReport>
