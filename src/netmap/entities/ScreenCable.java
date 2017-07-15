@@ -12,8 +12,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -32,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "ScreenCable.findByType", query = "SELECT s FROM ScreenCable s WHERE s.type = :type")
     , @NamedQuery(name = "ScreenCable.findBySpeed", query = "SELECT s FROM ScreenCable s WHERE s.speed = :speed")
 })
-public class ScreenCable implements Serializable
+public class ScreenCable extends ScreenItem implements Serializable
 {
 
     private static final long serialVersionUID = 1L;
@@ -50,6 +53,16 @@ public class ScreenCable implements Serializable
     @Basic(optional = false)
     @Column(name = "speed")
     private int speed;
+//    @MapsId
+    @OneToOne
+    @JoinColumn(name = "start_position_id")
+//    @Column(name = "start_position_id")
+    private Position startPosition;
+//    @MapsId
+    @OneToOne
+    @JoinColumn(name = "end_position_id")
+//    @Column(name = "end_position_id")
+    private Position endPosition;
 //    @JoinTable(name = "screen_cable_ports", joinColumns =
 //    {
 //        @JoinColumn(name = "cable_id", referencedColumnName = "id")
@@ -68,6 +81,9 @@ public class ScreenCable implements Serializable
 //    })
 //    @ManyToMany
 //    private List<Position> positionList;
+    
+//    private Position startPosition;
+//    private Position endPosition;
 
     public ScreenCable()
     {
@@ -111,6 +127,26 @@ public class ScreenCable implements Serializable
     public void setSpeed(int speed)
     {
         this.speed = speed;
+    }
+
+    public Position getStartPosition()
+    {
+        return startPosition;
+    }
+
+    public void setStartPosition(Position startPosition)
+    {
+        this.startPosition = startPosition;
+    }
+
+    public Position getEndPosition()
+    {
+        return endPosition;
+    }
+
+    public void setEndPosition(Position endPosition)
+    {
+        this.endPosition = endPosition;
     }
 
 //    @XmlTransient

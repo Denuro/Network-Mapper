@@ -5,113 +5,77 @@
  */
 package netmap.panels;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import netmap.components.ScreenPortTableModel;
-import netmap.database.managers.EquipmentManager;
-import netmap.database.managers.PortManager;
-import netmap.database.managers.ScreenPortManager;
 import netmap.entities.Equipment;
-import netmap.entities.Port;
-import netmap.entities.ScreenEquipment;
-import netmap.entities.ScreenPort;
+import netmap.entities.ScreenCable;
 import netmap.util.Application;
 
 /**
  *
  * @author Julia
  */
-public class ScreenEquipmentPanel extends javax.swing.JDialog
+public class ScreenCablePanel extends javax.swing.JDialog
 {
-    private ScreenEquipment screenEquipment;
-    private final Equipment equipment;
+    private ScreenCable screenCable;
     private int code = JOptionPane.CANCEL_OPTION;
+    private String types[] = {
+        "Rede cat5",
+        "Rede cat5e",
+        "Rede cat6",
+        "Cordão Óptico SM",
+        "Cordão Óptico SM LC/LC",
+        "Cordão Óptico SM LC/SC",
+        "Cordão Óptico SM SC/SC",
+        "Cordão Óptico MM",
+        "Cordão Óptico MM LC/LC",
+        "Cordão Óptico MM LC/SC",
+        "Cordão Óptico MM SC/SC"
+    };
 
-    public ScreenEquipmentPanel(ScreenEquipment screenEquipment)
+    public ScreenCablePanel(ScreenCable screenCable)
     {
         super(Application.getInstance().getMainFrame(), true);
-        this.screenEquipment = screenEquipment;
-        this.equipment = EquipmentManager.getInstance().get(screenEquipment.getEquipmentId());
+        this.screenCable = screenCable;
      
         init();
         
-        lbTitle.setText(screenEquipment.getName()+" do tipo "+equipment.getDescription());
-        tfName.setText(screenEquipment.getName());
-        loadScreenEquipmentPorts();
+        lbTitle.setText("Cabo de "+types[screenCable.getType()]);
+        tfSpeed.setText(String.valueOf(screenCable.getSpeed()));
+        comboType.setSelectedIndex(screenCable.getType());
     }
     
-    public ScreenEquipmentPanel(Equipment e)
+    public ScreenCablePanel()
     {
         super(Application.getInstance().getMainFrame(), true);
-        this.equipment = e;
         
         init();
         
-        lbTitle.setText("Novo "+e.getDescription()+" do tipo "+equipment.getDescription());
+        lbTitle.setText("Novo Cabo");
         btDelete.setVisible(false);
-        loadScreenEquipmentPorts();
     }
     
     private void init()
     {
         initComponents();
-        
-        tablePorts.putClientProperty("terminateEditOnFocusLost", true);
     }
     
-    public ScreenEquipment getScreenEquipment()
+    public ScreenCable getScreenCable()
     {
-        if (screenEquipment == null)
+        if (screenCable == null)
         {
-            screenEquipment = new ScreenEquipment();
+            screenCable = new ScreenCable();
         }
         
-        screenEquipment.setName(tfName.getText());
-        screenEquipment.setMapId(1);
-        screenEquipment.setEquipmentId(equipment.getId());
+        screenCable.setSpeed(Integer.parseInt(tfSpeed.getText()));
+        screenCable.setType(comboType.getSelectedIndex());
         
-        return screenEquipment;
+        return screenCable;
     }
 
     public int getCode()
     {
         return code;
-    }
-    
-    public List<ScreenPort> getScreenPorts()
-    {
-        return ((ScreenPortTableModel)tablePorts.getModel()).getPorts();
-    }
-    
-    private void loadScreenEquipmentPorts()
-    {
-        List<ScreenPort> ports;
-        
-        if (screenEquipment == null)
-        {
-            ports = new ArrayList<>();
-            for (Port p : PortManager.getInstance().get(equipment))
-            {
-                ScreenPort screenPort = new ScreenPort();
-                screenPort.setType(p.getType());
-                
-                ports.add(screenPort);
-            }
-        }
-        else
-        {
-            ports = ScreenPortManager.getInstance().getAllByEquipment(screenEquipment.getId());
-        }
-        
-        tablePorts.setModel(new ScreenPortTableModel(ports));
-        
-        JComboBox combo = new JComboBox<>();
-        combo.setModel(new DefaultComboBoxModel<>(ScreenPort.SWITCHPORTS.values()));
-        tablePorts.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(combo));
     }
 
     /**
@@ -127,11 +91,11 @@ public class ScreenEquipmentPanel extends javax.swing.JDialog
 
         lbTitle = new javax.swing.JLabel();
         pnData = new javax.swing.JPanel();
-        lbName = new javax.swing.JLabel();
-        tfName = new javax.swing.JTextField();
-        panelPorts = new javax.swing.JPanel();
-        scrollPorts = new javax.swing.JScrollPane();
-        tablePorts = new javax.swing.JTable();
+        lbSpeed = new javax.swing.JLabel();
+        tfSpeed = new javax.swing.JTextField();
+        lbType = new javax.swing.JLabel();
+        comboType = new javax.swing.JComboBox<>();
+        lbMbits = new javax.swing.JLabel();
         pnButtons = new javax.swing.JPanel();
         btOk = new javax.swing.JButton();
         btCancel = new javax.swing.JButton();
@@ -140,7 +104,7 @@ public class ScreenEquipmentPanel extends javax.swing.JDialog
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         lbTitle.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lbTitle.setText("Novo Equipamento");
+        lbTitle.setText("Nova Porta");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -152,22 +116,46 @@ public class ScreenEquipmentPanel extends javax.swing.JDialog
 
         pnData.setLayout(new java.awt.GridBagLayout());
 
-        lbName.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        lbName.setText("Nome:");
+        lbSpeed.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        lbSpeed.setText("Velocidade:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        pnData.add(lbName, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
+        pnData.add(lbSpeed, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
+        pnData.add(tfSpeed, gridBagConstraints);
+
+        lbType.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        lbType.setText("Tipo:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        pnData.add(lbType, gridBagConstraints);
+
+        comboType.setModel(new DefaultComboBoxModel(types));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-        pnData.add(tfName, gridBagConstraints);
+        pnData.add(comboType, gridBagConstraints);
+
+        lbMbits.setText("Mbits/s");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 10, 0);
+        pnData.add(lbMbits, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -177,32 +165,6 @@ public class ScreenEquipmentPanel extends javax.swing.JDialog
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 15, 10, 15);
         getContentPane().add(pnData, gridBagConstraints);
-
-        panelPorts.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Portas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
-        panelPorts.setLayout(new java.awt.GridBagLayout());
-
-        tablePorts.setModel(new ScreenPortTableModel());
-        scrollPorts.setViewportView(tablePorts);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-        panelPorts.add(scrollPorts, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 10, 15);
-        getContentPane().add(panelPorts, gridBagConstraints);
 
         pnButtons.setLayout(new java.awt.GridBagLayout());
 
@@ -252,10 +214,20 @@ public class ScreenEquipmentPanel extends javax.swing.JDialog
 
     private void btOkActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btOkActionPerformed
     {//GEN-HEADEREND:event_btOkActionPerformed
-        if (tfName.getText().isEmpty())
+        try
         {
-            JOptionPane.showMessageDialog(Application.getInstance().getMainFrame(), "O nome do equipamento é obrigatório");
-            tfName.grabFocus();
+            Integer.parseInt(tfSpeed.getText());
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(Application.getInstance().getMainFrame(), "Velocidade inválida.");
+            tfSpeed.grabFocus();
+            return;
+        }
+        if (tfSpeed.getText().isEmpty())
+        {
+            JOptionPane.showMessageDialog(Application.getInstance().getMainFrame(), "A velocidade do cabo é obrigatória");
+            tfSpeed.grabFocus();
         }
         else
         {
@@ -280,13 +252,13 @@ public class ScreenEquipmentPanel extends javax.swing.JDialog
     private javax.swing.JButton btCancel;
     private javax.swing.JButton btDelete;
     private javax.swing.JButton btOk;
-    private javax.swing.JLabel lbName;
+    private javax.swing.JComboBox<String> comboType;
+    private javax.swing.JLabel lbMbits;
+    private javax.swing.JLabel lbSpeed;
     private javax.swing.JLabel lbTitle;
-    private javax.swing.JPanel panelPorts;
+    private javax.swing.JLabel lbType;
     private javax.swing.JPanel pnButtons;
     private javax.swing.JPanel pnData;
-    private javax.swing.JScrollPane scrollPorts;
-    private javax.swing.JTable tablePorts;
-    private javax.swing.JTextField tfName;
+    private javax.swing.JTextField tfSpeed;
     // End of variables declaration//GEN-END:variables
 }

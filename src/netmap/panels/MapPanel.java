@@ -5,24 +5,27 @@
  */
 package netmap.panels;
 
-import java.awt.Dialog;
+import netmap.components.PaintMapPanel;
 import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 import javax.swing.JOptionPane;
 import netmap.components.EquipmentsListCellRenderer;
 import netmap.database.managers.EquipmentManager;
 import netmap.database.managers.PositionManager;
+import netmap.database.managers.ScreenCableManager;
 import netmap.database.managers.ScreenEquipmentManager;
 import netmap.database.managers.ScreenPortManager;
 import netmap.entities.Equipment;
 import netmap.entities.Position;
+import netmap.entities.ScreenCable;
 import netmap.entities.ScreenEquipment;
+import netmap.entities.ScreenItem;
 import netmap.entities.ScreenPort;
 import netmap.util.Application;
 import netmap.util.Properties;
-import netmap.util.Util;
 
 /**
  *
@@ -45,6 +48,9 @@ public class MapPanel extends javax.swing.JPanel
 
     private boolean searchEnabled = false;
 
+    final PaintMapPanel paintMap;
+    private ScreenCable currentCable;
+
     /**
      * Creates new form MapPanel
      */
@@ -52,7 +58,7 @@ public class MapPanel extends javax.swing.JPanel
     {
         initComponents();
 
-        final PaintMapPanel paintMap = new PaintMapPanel();
+        paintMap = new PaintMapPanel();
         scrollPaint.setViewportView(paintMap);
 
         listEquipments.setCellRenderer(new EquipmentsListCellRenderer());
@@ -64,74 +70,181 @@ public class MapPanel extends javax.swing.JPanel
         splitPane.setDividerLocation(dividerLocation);
         setSelectedTool(Properties.getInstance().getInt("lastSelectedTool", TOOL_CURSOR));
 
-        Equipment equipment = new Equipment();
-        equipment.setImage(Util.readImage(getClass().getResource("/img/router.png")));
-
-//        ScreenEquipment ed = new ScreenEquipment();
-//        ed.setEquipmentId(equipment);
-//        ed.setName("Teste com um texto de descrição simplesmente enorme, porque isso pode acontecer, né.");
-//        ed.setX(250);
-//        ed.setY(250);
-//
-//        List<DisplayPort> ports = new ArrayList<>();
-//        for (int i = 0; i < 24; i++)
-//        {
-//            DisplayPort port = new DisplayPort();
-//            port.setType(i % 2 == 0 ? Port.TYPE_ETHERNET : Port.TYPE_SFP);
-//            port.setLag(false);
-//            ports.add(port);
-//        }
-//        ed.setPorts(ports);
-
-//        paintMap.addDisplay(ed);
         paintMap.addMouseListener(new MouseAdapter()
         {
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                if (selectedTool == TOOL_EQUIPMENT)
+                switch (selectedTool)
                 {
-                    if (listEquipments.getSelectedIndex() >= 0)
-                    {
-                        ScreenEquipmentPanel screenEquipmentPanel = new ScreenEquipmentPanel(listEquipments.getSelectedValue());
-                        
-                        screenEquipmentPanel.setSize(600, 500);
-                        screenEquipmentPanel.setLocationRelativeTo(Application.getInstance().getMainFrame());
-                        screenEquipmentPanel.setModalExclusionType(Dialog.ModalExclusionType.NO_EXCLUDE);
-                        screenEquipmentPanel.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-                        screenEquipmentPanel.setVisible(true);
-
-                        if (screenEquipmentPanel.getCode() == JOptionPane.OK_OPTION)
+                    case TOOL_CURSOR:
+                        if (e.getClickCount() > 1)
                         {
-                            ScreenEquipment screenEquipment = screenEquipmentPanel.getScreenEquipment();
-                            Position position = new Position(e.getX(), e.getY());
-                            PositionManager.getInstance().save(position);
-                            
-                            screenEquipment.setPositionId(position.getId());
-                            ScreenEquipmentManager.getInstance().save(screenEquipment);
-                            paintMap.addDisplay(screenEquipment);
-                            
-                            for (ScreenPort screenPort : screenEquipmentPanel.getScreenPorts())
+                            ScreenItem clicked = paintMap.getClicked(e.getX(), e.getY());
+                            if (clicked != null)
                             {
-                                screenPort.setEquipmentId(screenEquipment.getId());
-                                ScreenPortManager.getInstance().save(screenPort);
+                                if (clicked instanceof ScreenEquipment)
+                                {
+                                    ScreenEquipment screenEquipment = (ScreenEquipment) clicked;
+                                    ScreenEquipmentPanel screenEquipmentPanel = new ScreenEquipmentPanel(screenEquipment);
+
+                                    screenEquipmentPanel.setSize(600, 500);
+                                    screenEquipmentPanel.setLocationRelativeTo(Application.getInstance().getMainFrame());
+                                    screenEquipmentPanel.setVisible(true);
+
+                                    int code = screenEquipmentPanel.getCode();
+                                    if (code == JOptionPane.OK_OPTION)
+                                    {
+                                        screenEquipment = screenEquipmentPanel.getScreenEquipment();
+
+                                        ScreenEquipmentManager.getInstance().save(screenEquipment);
+                                        paintMap.addDisplay(screenEquipment);
+
+                                        for (ScreenPort screenPort : screenEquipmentPanel.getScreenPorts())
+                                        {
+                                            ScreenPortManager.getInstance().save(screenPort);
+                                        }
+                                    }
+                                    else if (code == 4)
+                                    {
+                                        paintMap.removeDisplay(screenEquipment);
+
+                                        for (ScreenPort screenPort : screenEquipmentPanel.getScreenPorts())
+                                        {
+                                            ScreenPortManager.getInstance().delete(screenPort);
+                                        }
+                                        ScreenEquipmentManager.getInstance().delete(screenEquipment);
+                                    }
+
+                                    paintMap.repaint();
+                                    setSelectedTool(TOOL_CURSOR);
+                                }
+                                else if (clicked instanceof ScreenCable)
+                                {
+                                    ScreenCable screenCable = (ScreenCable) clicked;
+                                    ScreenCablePanel screenCablePanel = new ScreenCablePanel(screenCable);
+
+                                    screenCablePanel.setSize(600, 300);
+                                    screenCablePanel.setLocationRelativeTo(Application.getInstance().getMainFrame());
+                                    screenCablePanel.setVisible(true);
+
+                                    int code = screenCablePanel.getCode();
+                                    if (screenCablePanel.getCode() == JOptionPane.OK_OPTION)
+                                    {
+                                        screenCable = screenCablePanel.getScreenCable();
+                                        ScreenCableManager.getInstance().save(screenCable);
+                                    }
+                                    else if (code == 4)
+                                    {
+                                        paintMap.removeDisplay(screenCable);
+                                        ScreenCableManager.getInstance().delete(screenCable);
+                                    }
+
+                                    paintMap.repaint();
+                                    setSelectedTool(TOOL_CURSOR);
+                                }
                             }
                         }
-                        
-                        setSelectedTool(TOOL_CURSOR);
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(
-                                Application.getInstance().getMainFrame(),
-                                "Selectione um equipamento na listagem",
-                                "Adicionar equipamento",
-                                JOptionPane.ERROR_MESSAGE
-                        );
-                    }
+                        break;
+                    case TOOL_EQUIPMENT:
+                        if (listEquipments.getSelectedIndex() >= 0)
+                        {
+                            ScreenEquipmentPanel screenEquipmentPanel = new ScreenEquipmentPanel(listEquipments.getSelectedValue());
+
+                            screenEquipmentPanel.setSize(600, 500);
+                            screenEquipmentPanel.setLocationRelativeTo(Application.getInstance().getMainFrame());
+                            screenEquipmentPanel.setVisible(true);
+
+                            if (screenEquipmentPanel.getCode() == JOptionPane.OK_OPTION)
+                            {
+                                ScreenEquipment screenEquipment = screenEquipmentPanel.getScreenEquipment();
+                                Position position = new Position(e.getX(), e.getY());
+                                PositionManager.getInstance().save(position);
+
+                                screenEquipment.setPositionId(position.getId());
+                                ScreenEquipmentManager.getInstance().save(screenEquipment);
+                                paintMap.addDisplay(screenEquipment);
+
+                                for (ScreenPort screenPort : screenEquipmentPanel.getScreenPorts())
+                                {
+                                    screenPort.setEquipmentId(screenEquipment.getId());
+                                    ScreenPortManager.getInstance().save(screenPort);
+                                }
+                            }
+
+                            paintMap.repaint();
+                            setSelectedTool(TOOL_CURSOR);
+                        }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(
+                                    Application.getInstance().getMainFrame(),
+                                    "Selectione um equipamento na listagem",
+                                    "Adicionar equipamento",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        }
+                        break;
+                    case TOOL_CABLE:
+                        if (currentCable == null)
+                        {
+                            currentCable = new ScreenCable();
+                            currentCable.setStartPosition(new Position(e.getX(), e.getY()));
+                            paintMap.addDisplay(currentCable);
+                        }
+                        else
+                        {
+                            Position start = currentCable.getStartPosition();
+                            Position end = new Position(e.getX(), e.getY());
+                            ScreenCablePanel screenCablePanel = new ScreenCablePanel();
+
+                            screenCablePanel.setSize(600, 300);
+                            screenCablePanel.setLocationRelativeTo(Application.getInstance().getMainFrame());
+                            screenCablePanel.setVisible(true);
+
+                            if (screenCablePanel.getCode() == JOptionPane.OK_OPTION)
+                            {
+                                
+                                ScreenCable screenCable = screenCablePanel.getScreenCable();
+                                screenCable.setStartPosition(start);
+                                screenCable.setEndPosition(end);
+
+                                PositionManager.getInstance().save(screenCable.getStartPosition());
+                                PositionManager.getInstance().save(screenCable.getEndPosition());
+                                ScreenCableManager.getInstance().save(screenCable);
+
+                                paintMap.addDisplay(screenCable);
+                            }
+
+                            paintMap.repaint();
+                            setSelectedTool(TOOL_CURSOR);
+                            paintMap.removeDisplay(currentCable);
+                            currentCable = null;
+                        }
+                        break;
                 }
             }
         });
+        paintMap.addMouseMotionListener(new MouseMotionAdapter()
+        {
+            @Override
+            public void mouseMoved(MouseEvent e)
+            {
+                if (selectedTool == TOOL_CABLE && currentCable != null)
+                {
+                    paintMap.repaint();
+                }
+            }
+        });
+        /*paintMap.addMouseWheelListener(new MouseWheelListener()
+        {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e)
+            {
+                int level = Math.min(4, Math.max(paintMap.getZoom().ordinal() + e.getWheelRotation() * -1, 0));
+                paintMap.setZoom(PaintMapPanel.ZOOM.values()[level]);
+            }
+        });*/
 
         status = STATUS_VIEW;
     }
@@ -236,6 +349,9 @@ public class MapPanel extends javax.swing.JPanel
         btToolEquipment.setSelected(false);
         btToolCable.setSelected(false);
         btToolVlan.setSelected(false);
+
+        paintMap.removeDisplay(currentCable);
+        currentCable = null;
     }
 
     public void saveProperties()
@@ -491,7 +607,6 @@ public class MapPanel extends javax.swing.JPanel
     {//GEN-HEADEREND:event_btToolVlanActionPerformed
         setSelectedTool(TOOL_VLAN);
     }//GEN-LAST:event_btToolVlanActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btSearch;
