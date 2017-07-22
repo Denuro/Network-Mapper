@@ -2,3 +2,6 @@
 /src/META-INF/hibernate.cfg.xml
 /src/META-INF/persistence.xml
 /src/META-INF/hibernate_postgre.cfg.xml
+/src/META-INF/hibernate_mysql.cfg.xml
+/src/META-INF/persistence_mysql.xml
+/dist/

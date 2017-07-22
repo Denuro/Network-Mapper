@@ -56,7 +56,7 @@ public class MainFrame extends javax.swing.JFrame
         ((CardLayout)panelCards.getLayout()).show(panelCards, MAPCARD);
         lbTitle.setText("Mapa");
         btBackToMap.setVisible(false);
-        btEdit.setVisible(true);
+        btSave.setVisible(true);
         
         miMap.setEnabled(false);
         miBrands.setEnabled(true);
@@ -71,7 +71,7 @@ public class MainFrame extends javax.swing.JFrame
         ((CardLayout)panelCards.getLayout()).show(panelCards, BRANDCARD);
         lbTitle.setText("Marcas");
         btBackToMap.setVisible(true);
-        btEdit.setVisible(false);
+        btSave.setVisible(false);
         
         miMap.setEnabled(true);
         miBrands.setEnabled(false);
@@ -86,7 +86,7 @@ public class MainFrame extends javax.swing.JFrame
         ((CardLayout)panelCards.getLayout()).show(panelCards, EQUIPMENTTYPECARD);
         lbTitle.setText("Tipos de Equipamentos");
         btBackToMap.setVisible(true);
-        btEdit.setVisible(false);
+        btSave.setVisible(false);
         
         miMap.setEnabled(true);
         miBrands.setEnabled(true);
@@ -101,7 +101,7 @@ public class MainFrame extends javax.swing.JFrame
         ((CardLayout)panelCards.getLayout()).show(panelCards, EQUIPMENTCARD);
         lbTitle.setText("Equipamentos");
         btBackToMap.setVisible(true);
-        btEdit.setVisible(false);
+        btSave.setVisible(false);
         
         miMap.setEnabled(true);
         miBrands.setEnabled(true);
@@ -129,7 +129,7 @@ public class MainFrame extends javax.swing.JFrame
         panelTitleComponents = new javax.swing.JPanel();
         btBackToMap = new javax.swing.JButton();
         lbTitle = new javax.swing.JLabel();
-        btEdit = new javax.swing.JButton();
+        btSave = new javax.swing.JButton();
         panelCards = new javax.swing.JPanel();
         menuBar = new javax.swing.JMenuBar();
         menuModels = new javax.swing.JMenu();
@@ -169,15 +169,15 @@ public class MainFrame extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
         panelTitleComponents.add(lbTitle, gridBagConstraints);
 
-        btEdit.setText("Editar");
-        btEdit.addActionListener(new java.awt.event.ActionListener()
+        btSave.setText("Salvar");
+        btSave.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                btEditActionPerformed(evt);
+                btSaveActionPerformed(evt);
             }
         });
-        panelTitleComponents.add(btEdit, new java.awt.GridBagConstraints());
+        panelTitleComponents.add(btSave, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -296,27 +296,29 @@ public class MainFrame extends javax.swing.JFrame
         aboutFrame.setVisible(true);
     }//GEN-LAST:event_miAboutActionPerformed
 
-    private void btEditActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btEditActionPerformed
-    {//GEN-HEADEREND:event_btEditActionPerformed
-        if (mapPanel.getStatus() == MapPanel.STATUS_VIEW)
+    private void btSaveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btSaveActionPerformed
+    {//GEN-HEADEREND:event_btSaveActionPerformed
+        /*if (mapPanel.getStatus() == MapPanel.STATUS_VIEW)
         {
             if (mapPanel.setStatus(MapPanel.STATUS_EDIT))
             {
-                btEdit.setText("Salvar");
+                btSave.setText("Salvar");
             }
         }
         else
         {
             if (mapPanel.setStatus(MapPanel.STATUS_VIEW))
             {
-                btEdit.setText("Editar");
+                btSave.setText("Editar");
             }
-        }
-    }//GEN-LAST:event_btEditActionPerformed
+        }*/
+        
+        mapPanel.exportImage();
+    }//GEN-LAST:event_btSaveActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btBackToMap;
-    private javax.swing.JButton btEdit;
+    private javax.swing.JButton btSave;
     private javax.swing.JLabel lbTitle;
     private javax.swing.JMenu menuAbout;
     private javax.swing.JMenuBar menuBar;

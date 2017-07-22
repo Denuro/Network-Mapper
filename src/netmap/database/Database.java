@@ -43,7 +43,7 @@ public class Database implements AutoCloseable
         try
         {
 //            Class.forName("com.mysql.jdbc.Driver");
-//            Class.forName("org.postgresql.Driver");
+            Class.forName("org.postgresql.Driver");
         }
         catch (Exception e)
         {
@@ -58,7 +58,7 @@ public class Database implements AutoCloseable
             if (conn == null || conn.isClosed())
             {
 //                conn = DriverManager.getConnection("jdbc:mysql://denuro.com:3306/netmap", "darlan", "");
-//                conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/netmap", "postgres", "123456");
+                conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/netmap", "postgres", "postgres");
             }
         }
         catch (Exception e)

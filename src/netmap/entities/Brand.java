@@ -29,7 +29,7 @@ import netmap.util.Util;
 {
     @NamedQuery(name = "Brand.findAll", query = "SELECT b FROM Brand b")
     , @NamedQuery(name = "Brand.findById", query = "SELECT b FROM Brand b WHERE b.id = :id")
-    , @NamedQuery(name = "Brand.findByDescription", query = "SELECT b FROM Brand b WHERE b.description = :description")
+    , @NamedQuery(name = "Brand.findByDescription", query = "SELECT b FROM Brand b WHERE lower(b.description) like lower(:description)")
     , @NamedQuery(name = "Brand.findByCompany", query = "SELECT b FROM Brand b WHERE b.company = :company")
     , @NamedQuery(name = "Brand.findByWebsite", query = "SELECT b FROM Brand b WHERE b.website = :website")
 })

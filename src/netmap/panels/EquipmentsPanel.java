@@ -68,7 +68,7 @@ public class EquipmentsPanel extends javax.swing.JPanel
         cbType.setRenderer(new EquipmentTypesListCellRenderer());
         cbBrand.setRenderer(new BrandsListCellRenderer(50));
 
-        panelEquipmentEdit.setVisible(false);
+        scrollEdit.setVisible(false);
     }
 
     public void load()
@@ -153,7 +153,7 @@ public class EquipmentsPanel extends javax.swing.JPanel
         if (panelNoEquipmentSelected.isVisible())
         {
             panelNoEquipmentSelected.setVisible(false);
-            panelEquipmentEdit.setVisible(true);
+            scrollEdit.setVisible(true);
         }
 
         listEquipments.clearSelection();
@@ -246,7 +246,7 @@ public class EquipmentsPanel extends javax.swing.JPanel
         if (panelNoEquipmentSelected.isVisible())
         {
             panelNoEquipmentSelected.setVisible(false);
-            panelEquipmentEdit.setVisible(true);
+            scrollEdit.setVisible(true);
         }
 
         changed = false;
@@ -264,7 +264,7 @@ public class EquipmentsPanel extends javax.swing.JPanel
         listEquipments.clearSelection();
 
         panelNoEquipmentSelected.setVisible(true);
-        panelEquipmentEdit.setVisible(false);
+        scrollEdit.setVisible(false);
     }
 
     /**
@@ -757,7 +757,7 @@ public class EquipmentsPanel extends javax.swing.JPanel
                 PortManager.getInstance().delete(selectedEquipment);
                 EquipmentManager.getInstance().delete(selectedEquipment);
 
-                panelEquipmentEdit.setVisible(false);
+                scrollEdit.setVisible(false);
                 panelNoEquipmentSelected.setVisible(true);
                 
                 selectedEquipment = null;
@@ -796,15 +796,15 @@ public class EquipmentsPanel extends javax.swing.JPanel
         {
             PreparedStatement ps = db.prepareStatement(
                     "   SELECT"
-                    + "     case e.type when 0 then 'Servidor' when 1 then 'Roteador' when 2 then 'Switch' else 'Outro' end as type,"
+                    + "     et.description as type,"
                     + "     e.description AS equipment_description,"
                     + "     e.image,"
                     + "     b.description AS brand_description,"
                     + "     (select count(*) from ports where equipment_id = e.id) as c_ports"
                     + " FROM "
                     + "    equipments e "
-                    + " JOIN "
-                    + "    brands b ON b.id = e.brand_id"
+                    + " JOIN brands b ON b.id = e.brand_id"
+                    + " JOIN equipment_types et ON et.id = e.equipment_type_id"
             );
 
             ResultSet rs = ps.executeQuery();

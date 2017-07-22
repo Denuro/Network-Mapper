@@ -31,7 +31,7 @@ import netmap.util.Util;
 {
     @NamedQuery(name = "Equipment.findAll", query = "SELECT e FROM Equipment e")
     , @NamedQuery(name = "Equipment.findById", query = "SELECT e FROM Equipment e WHERE e.id = :id")
-    , @NamedQuery(name = "Equipment.findByDescription", query = "SELECT e FROM Equipment e WHERE e.description = :description")
+    , @NamedQuery(name = "Equipment.findByDescription", query = "SELECT e FROM Equipment e WHERE lower(e.description) like lower(:description)")
     , @NamedQuery(name = "Equipment.countByBrand", query = "SELECT count(e.id) FROM Equipment e WHERE e.brandId = :brand")
 })
 public class Equipment implements Serializable

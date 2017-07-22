@@ -27,6 +27,7 @@ import netmap.database.managers.PositionManager;
 import netmap.database.managers.ScreenCableManager;
 import netmap.database.managers.ScreenEquipmentManager;
 import netmap.database.managers.ScreenPortManager;
+import netmap.entities.Equipment;
 import netmap.entities.Port;
 import netmap.entities.Position;
 import netmap.entities.ScreenCable;
@@ -132,41 +133,26 @@ public class PaintMapPanel extends JPanel
 
         for (ScreenItem screenItem : displayItems)
         {
-            if (screenItem instanceof ScreenCable)
-            {
-                ScreenCable screenCable = (ScreenCable)screenItem;
-                
-                Position startPosition = screenCable.getStartPosition();
-                Position endPosition;
-                if (screenCable.getEndPosition() != null)
-                {
-                    endPosition = screenCable.getEndPosition();
-                }
-                else
-                {
-                    endPosition = new Position(getMousePosition().x, getMousePosition().y);
-                }
-                
-                Shape line = new Line2D.Double(startPosition.getX(), startPosition.getY(), endPosition.getX(), endPosition.getY());
-                if (!itemShapes.containsValue(screenItem))
-                {
-                    itemShapes.put(line, screenItem);
-                }
-                g2d.setColor(new Color(66, 200, 66));
-                g2d.setStroke(new BasicStroke((float)(5*zoom.getZoom())));
-                g2d.draw(line);
-            }
-            else if (screenItem instanceof ScreenEquipment)
+            if (screenItem instanceof ScreenEquipment)
             {
                 ScreenEquipment screenEquipment = (ScreenEquipment) screenItem;
                 Position position = PositionManager.getInstance().get(screenEquipment.getPositionId());
                 
                 Point upperLeft = new Point();
                 Point downRight = new Point();
-
-                BufferedImage equipmentImage = Util.resizeImageWidth(
-                        EquipmentManager.getInstance().get(screenEquipment.getEquipmentId()).getImage(), (int) (150 * zoom.getZoom())
-                );
+                
+                Equipment equipment = EquipmentManager.getInstance().get(screenEquipment.getEquipmentId());
+                BufferedImage equipmentImage = null;
+                if (equipment.getImage() != null)
+                {
+                    equipmentImage = Util.resizeImageWidth(
+                            equipment.getImage(), (int) (150 * zoom.getZoom())
+                    );
+                }
+                else
+                {
+                    equipmentImage = Util.readImage(getClass().getResource("/img/forbidden_list.png"));
+                }
                 g2d.drawImage(equipmentImage, position.getX(), position.getY(), this);
 
                 String title = screenEquipment.getName();
@@ -240,6 +226,30 @@ public class PaintMapPanel extends JPanel
                 itemShapes.put(shape, screenItem);
                 //g2d.setColor(Color.red);
                 //g2d.draw(shape);
+            }
+            else if (screenItem instanceof ScreenCable)
+            {
+                ScreenCable screenCable = (ScreenCable)screenItem;
+                
+                Position startPosition = screenCable.getStartPosition();
+                Position endPosition;
+                if (screenCable.getEndPosition() != null)
+                {
+                    endPosition = screenCable.getEndPosition();
+                }
+                else
+                {
+                    endPosition = new Position(getMousePosition().x, getMousePosition().y);
+                }
+                
+                Shape line = new Line2D.Double(startPosition.getX(), startPosition.getY(), endPosition.getX(), endPosition.getY());
+                if (!itemShapes.containsValue(screenItem))
+                {
+                    itemShapes.put(line, screenItem);
+                }
+                g2d.setColor(new Color(66, 200, 66));
+                g2d.setStroke(new BasicStroke((float)(5*zoom.getZoom())));
+                g2d.draw(line);
             }
         }
     }

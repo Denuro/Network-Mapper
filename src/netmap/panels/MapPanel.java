@@ -7,10 +7,15 @@ package netmap.panels;
 
 import netmap.components.PaintMapPanel;
 import java.awt.EventQueue;
+import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import netmap.components.EquipmentsListCellRenderer;
 import netmap.database.managers.EquipmentManager;
@@ -26,6 +31,7 @@ import netmap.entities.ScreenItem;
 import netmap.entities.ScreenPort;
 import netmap.util.Application;
 import netmap.util.Properties;
+import netmap.util.Util;
 
 /**
  *
@@ -364,6 +370,34 @@ public class MapPanel extends javax.swing.JPanel
         Properties.getInstance().setInt("lastSelectedTool", selectedTool);
         Properties.getInstance().setInt("mapDividerLocation", dividerLocation);
     }
+    
+    public void exportImage()
+    {
+        JFileChooser chooser = new JFileChooser(Util.getFileChooserDirectory());
+        chooser.setFileFilter(Util.getImageFileFilter());
+        int ret = chooser.showSaveDialog(Application.getInstance().getMainFrame());
+        if (ret == JFileChooser.APPROVE_OPTION)
+        {
+            BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+
+            Graphics2D g2d = img.createGraphics();
+            paintMap.paintAll(g2d);
+            g2d.dispose();
+            
+            try
+            {
+                ImageIO.write(img, "png", chooser.getSelectedFile());
+            }
+            catch (IOException e)
+            {
+                Util.handleException(e);
+            }
+            
+            Util.saveFileChooserDirectory(chooser.getSelectedFile());
+            
+            JOptionPane.showMessageDialog(Application.getInstance().getMainFrame(), "Arquivo exportado com sucesso");
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -503,6 +537,14 @@ public class MapPanel extends javax.swing.JPanel
         panelEquipments.add(scrollEquipments, gridBagConstraints);
 
         panelSearchEquipment.setLayout(new java.awt.GridBagLayout());
+
+        tfSearchEquipment.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                tfSearchEquipmentActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -514,6 +556,13 @@ public class MapPanel extends javax.swing.JPanel
 
         btSearchEquipment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/search.png"))); // NOI18N
         btSearchEquipment.setPreferredSize(new java.awt.Dimension(23, 23));
+        btSearchEquipment.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btSearchEquipmentActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -607,6 +656,16 @@ public class MapPanel extends javax.swing.JPanel
     {//GEN-HEADEREND:event_btToolVlanActionPerformed
         setSelectedTool(TOOL_VLAN);
     }//GEN-LAST:event_btToolVlanActionPerformed
+
+    private void tfSearchEquipmentActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_tfSearchEquipmentActionPerformed
+    {//GEN-HEADEREND:event_tfSearchEquipmentActionPerformed
+        load();
+    }//GEN-LAST:event_tfSearchEquipmentActionPerformed
+
+    private void btSearchEquipmentActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btSearchEquipmentActionPerformed
+    {//GEN-HEADEREND:event_btSearchEquipmentActionPerformed
+        load();
+    }//GEN-LAST:event_btSearchEquipmentActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btSearch;
