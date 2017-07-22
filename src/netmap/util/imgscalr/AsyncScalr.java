@@ -34,7 +34,7 @@ import netmap.util.imgscalr.Scalr.Rotation;
 
 /**
  * Class used to provide the asynchronous versions of all the methods defined in
- * {@link Scal} for the purpose of efficiently handling large amounts of image
+ * {@link Scalr} for the purpose of efficiently handling large amounts of image
  * operations via a select number of processing threads asynchronously.
  * <p>
  * Given that image-scaling operations, especially when working with large
@@ -51,7 +51,7 @@ import netmap.util.imgscalr.Scalr.Rotation;
  * that it should be integrated directly into the imgscalr library for everyone
  * to benefit from.
  * <p>
- * Every method in this class wraps the matching methods in the {@link Scal}
+ * Every method in this class wraps the matching methods in the {@link Scalr}
  * class in new {@link Callable} instances that are submitted to an internal
  * {@link ExecutorService} for execution at a later date. A {@link Future} is
  * returned to the caller representing the task that is either currently
@@ -241,7 +241,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#apply(BufferedImage, BufferedImageOp[])
+	 * @see Scalr#apply(BufferedImage, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> apply(final BufferedImage src,
 			final BufferedImageOp... ops) throws IllegalArgumentException,
@@ -256,7 +256,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#crop(BufferedImage, int, int, BufferedImageOp[])
+	 * @see Scalr#crop(BufferedImage, int, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> crop(final BufferedImage src,
 			final int width, final int height, final BufferedImageOp... ops)
@@ -271,7 +271,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#crop(BufferedImage, int, int, int, int, BufferedImageOp[])
+	 * @see Scalr#crop(BufferedImage, int, int, int, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> crop(final BufferedImage src,
 			final int x, final int y, final int width, final int height,
@@ -287,7 +287,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#pad(BufferedImage, int, BufferedImageOp[])
+	 * @see Scalr#pad(BufferedImage, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> pad(final BufferedImage src,
 			final int padding, final BufferedImageOp... ops)
@@ -302,7 +302,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#pad(BufferedImage, int, Color, BufferedImageOp[])
+	 * @see Scalr#pad(BufferedImage, int, Color, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> pad(final BufferedImage src,
 			final int padding, final Color color, final BufferedImageOp... ops)
@@ -317,7 +317,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final int targetSize, final BufferedImageOp... ops)
@@ -332,7 +332,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, Method, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, Method, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final Method scalingMethod, final int targetSize,
@@ -348,7 +348,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, Mode, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, Mode, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final Mode resizeMode, final int targetSize,
@@ -364,7 +364,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, Method, Mode, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, Method, Mode, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final Method scalingMethod, final Mode resizeMode,
@@ -381,7 +381,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, int, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, int, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final int targetWidth, final int targetHeight,
@@ -397,7 +397,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, Method, int, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, Method, int, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final Method scalingMethod, final int targetWidth,
@@ -413,7 +413,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, Mode, int, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, Mode, int, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final Mode resizeMode, final int targetWidth,
@@ -430,7 +430,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#resize(BufferedImage, Method, Mode, int, int, BufferedImageOp[])
+	 * @see Scalr#resize(BufferedImage, Method, Mode, int, int, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> resize(final BufferedImage src,
 			final Method scalingMethod, final Mode resizeMode,
@@ -448,7 +448,7 @@ public class AsyncScalr {
 	}
 
 	/**
-	 * @see Scal#rotate(BufferedImage, Rotation, BufferedImageOp[])
+	 * @see Scalr#rotate(BufferedImage, Rotation, BufferedImageOp[])
 	 */
 	public static Future<BufferedImage> rotate(final BufferedImage src,
 			final Rotation rotation, final BufferedImageOp... ops)

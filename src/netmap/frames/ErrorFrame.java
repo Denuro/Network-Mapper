@@ -19,6 +19,8 @@ public class ErrorFrame extends javax.swing.JDialog
 
     /**
      * Creates new form ErrorFrame
+     * @param title
+     * @param e
      */
     public ErrorFrame(String title, Exception e)
     {
